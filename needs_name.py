@@ -72,7 +72,7 @@ def combos(n, i):
                 yield l // (g(n - (k + 1)) + 1)
         if d == n - 3: # the last number	
             yield int(d == depth(n, i - 1))
-    elif n == 4: # eugh hard coding solutions isn't my favorite, but this is such a small thing that I can't be bothered.
+    elif n == 4:
         if d == 1:
             yield int(d == depth(n, i - 1))
 
@@ -80,9 +80,8 @@ def get_path(n, i): # this could be optimized a bit more
     ''' Returns the ith path in the series for a string of size n. '''
     output = list((i, i+1) for i in range(n))
     for index in combos(n, i):
-        output = list(output[:index]) + \
-            [(output[index][0], output[index + 1][1])] + \
-            ([] if index + 2 >= n else output[index + 2:])
+        output[index] = (output[index][0], output[index + 1][1])
+        del output[index + 1]
     return output
 
 # Unique Series Functions ======================================================
