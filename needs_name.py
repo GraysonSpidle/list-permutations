@@ -72,12 +72,9 @@ def combos(n, i):
                 yield l // (g(n - (k + 1)) + 1)
         if d == n - 3: # the last number	
             yield int(d == depth(n, i - 1))
-    elif n == 4:
+    elif n == 4: # eugh hard coding solutions isn't my favorite, but this is such a small thing that I can't be bothered.
         if d == 1:
-            if i in (2,5,8):
-                yield 0
-            elif i in (3,6,9):
-                yield 1
+            yield int(d == depth(n, i - 1))
 
 def get_path(n, i): # this could be optimized a bit more
     ''' Returns the ith path in the series for a string of size n. '''
@@ -96,12 +93,13 @@ def _func(i):
             return g(k) + 1
 
 def _j(N, i): # starting element index of each line in the list diagram for uniques.
+    # N is a log of 2
     if N == 1:
         offset = 2
     elif N > 1:
         offset = 1
     else:
-        offset = None # I know this will cause an error, but this equation isn't for n < 1
+        offset = None # I know this will cause an error, but this equation isn't for N < 1
     return sum(G(k + 2 + log2(N)) for k in range(i + offset)) - (2 + log2(N))
 
 def _func2(i):
@@ -121,7 +119,7 @@ def get_unique_path_index(n, i):
     if n < 5:
         if n == 4:
             return (1,2,3,4,6,7)[i]
-        return # figure out n == 4
+        return
     if 0 <= i < n:
         return i + 1
     # past this point we need to offset i by n. So now the index will be i - n.
