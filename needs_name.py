@@ -42,7 +42,7 @@ def g(n):
     if 0 < n < 3:
         return n  - 1
     num = factorial(n - 1)
-    return sum(num // factorial(2 + i) for i in range(1, n - 2)) + 3 * (num // 2) - 1
+    return sum(num // factorial(2 + i) for i in range(1, n - 2)) + 3 * (num // 2)
     
 
 def G(n):
@@ -53,17 +53,17 @@ def G(n):
 
 def depth(n, i):
     ''' i = 0 is assumed to be the input. '''
-    I = (i - 1) % (g(n - 1) + 1)
+    I = (i - 1) % g(n - 1)
     if I and n > 3:
         return 1 + depth(n - 1, I)
     return 0
 
 def normalize(n, i):
-    I = i % (g(n - 1) + 1)
+    I = i % g(n - 1)
     if I:
         return I
     else:
-        return g(n - 1) + 1
+        return g(n - 1)
 
 def normalize_to(n, i, to):
     if n < to:
@@ -77,12 +77,12 @@ def combos(n, i):
         return None
     d = depth(n, i)
     if d >= 0: # the first number
-        yield (i - 1) // (g(n - 1) + 1)
+        yield (i - 1) // g(n - 1)
     if n > 4:
         if d >= 1: # everything in between
             for k in range(1, min(d + 1, (n - 3))):
                 l = (normalize_to(n, i - (k - 1), n - (k - 1)) - 2)
-                yield l // (g(n - (k + 1)) + 1)
+                yield l // g(n - (k + 1))
         if d == n - 3: # the last number	
             yield int(d == depth(n, i - 1))
     elif n == 4:
@@ -99,12 +99,12 @@ def rcombos(n, i):
         if d >= 1: # everything in between
             for k in range(min(d + 1, (n - 3)) - 1, 0, -1) :
                 l = (normalize_to(n, i - (k - 1), n - (k - 1)) - 2)
-                yield l // (g(n - (k + 1)) + 1)
+                yield l // g(n - (k + 1))
     elif n == 4:
         if d == 1:
             yield int(d == depth(n, i - 1))
     if d >= 0: # the first number
-        yield (i - 1) // (g(n - 1) + 1)
+        yield (i - 1) // g(n - 1)
 
 def get_path(n, i):
     ''' Returns the ith path in the series for a string of size n. '''
@@ -128,7 +128,7 @@ def rget_path(n, i):
 def _func(i):
     for k in count(start=3):
         if i < 2**k - (k + 2):
-            return g(k) + 1
+            return g(k)
 
 def _j(N, i): # starting element index of each line in the list diagram for uniques.
     # N is a log of 2
@@ -176,13 +176,13 @@ def get_unique_path_index(n, i):
 
 def paths(n):
     ''' Returns a generator that yields every single path (with lots of duplicates) for a string of size n. '''
-    for i in range(g(n) + 1):
+    for i in range(g(n)):
         yield get_path(n, i)
 
 def unique_paths(n):
     ''' Returns a generator that yields every single path (with no duplicates) for a string of size n. '''
     yield list((i, i+1) for i in range(n))
-    for i in range(G(n) - 1):
+    for i in range(1, G(n)):
         yield get_path(n, get_unique_path_index(n, i))
 
 def apply_path(sliceable, path):
@@ -196,18 +196,6 @@ def iterate_paths(string):
 
 # Main =========================================================================
 
-def depth2(n, i):
-    s = 0
-    temp = i
-    for k in range(1, n - 3):
-        s += temp - 1
-        temp = temp % (g(n - k) + 1)
-    return s
-
-
-
 if __name__ == "__main__":
     for e in unique_paths(5):
         print(*e)
-    for n in range(4, 11):
-        print(n, g(n))
