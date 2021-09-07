@@ -17,20 +17,33 @@ Author: Grayson Spidle
 '''
 
 from itertools import count
-from math import log2
+from math import log2, factorial
 
 # Core Functions ===============================================================
 
 def f(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
-    ''' Number of unique nodes for a string of n size. Includes nodes in input. '''
+    ''' Total number of nodes for a string of n size across all paths. Includes nodes in input '''
+    if n == 2:
+        return 2
+    return (n - 1) * f(n - 1) + n
+
+def F(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
+    ''' Total number of unique nodes for a string of n size across all paths. Includes nodes in input. '''
     return ((n - 1) * n // 2) - 1 # it's a triangle number - 1
 
 def g(n):
     ''' Number of paths for a string of n size. Does not include the input. '''
+    '''
     if 0 < n <= 3:
         return n - 1
     elif n > 3:
         return (n - 1) * (g(n - 1) + 1)
+    '''
+    if 0 < n < 3:
+        return n  - 1
+    num = factorial(n - 1)
+    return sum(num // factorial(2 + i) for i in range(1, n - 2)) + 3 * (num // 2) - 1
+    
 
 def G(n):
     ''' Number of unique paths for a string of n size. Includes the input. '''
@@ -39,7 +52,7 @@ def G(n):
 # Raw Series Functions =========================================================
 
 def depth(n, i):
-    ''' 0 is assumed to be the input. '''
+    ''' i = 0 is assumed to be the input. '''
     I = (i - 1) % (g(n - 1) + 1)
     if I and n > 3:
         return 1 + depth(n - 1, I)
@@ -76,13 +89,39 @@ def combos(n, i):
         if d == 1:
             yield int(d == depth(n, i - 1))
 
-def get_path(n, i): # this could be optimized a bit more
+def rcombos(n, i):
+    if i < 1:
+        return None
+    d = depth(n, i)
+    if n > 4:
+        if d == n - 3: # the last number	
+            yield int(d == depth(n, i - 1))
+        if d >= 1: # everything in between
+            for k in range(min(d + 1, (n - 3)) - 1, 0, -1) :
+                l = (normalize_to(n, i - (k - 1), n - (k - 1)) - 2)
+                yield l // (g(n - (k + 1)) + 1)
+    elif n == 4:
+        if d == 1:
+            yield int(d == depth(n, i - 1))
+    if d >= 0: # the first number
+        yield (i - 1) // (g(n - 1) + 1)
+
+def get_path(n, i):
     ''' Returns the ith path in the series for a string of size n. '''
     output = list((i, i+1) for i in range(n))
     for index in combos(n, i):
         output[index] = (output[index][0], output[index + 1][1])
         del output[index + 1]
     return output
+
+def rget_path(n, i):
+    output = list((i, i + 1) for i in range(n))
+    for index in (-e for e in rcombos(n, i)):
+        if index == 0:
+            output[index] = (output[index][0], output[index + 1][1])
+            del output[index + 1]
+        else:
+            output[index] = (output[index - 1][0], output[index][1])
 
 # Unique Series Functions ======================================================
 
@@ -137,7 +176,7 @@ def get_unique_path_index(n, i):
 
 def paths(n):
     ''' Returns a generator that yields every single path (with lots of duplicates) for a string of size n. '''
-    for i in range(g(n)):
+    for i in range(g(n) + 1):
         yield get_path(n, i)
 
 def unique_paths(n):
@@ -151,9 +190,24 @@ def apply_path(sliceable, path):
     for node in path:
         yield sliceable[slice(*node)]
 
+def iterate_paths(string):
+    for upath in unique_paths(len(string)):
+        yield apply_path(string, upath)
+
+# Main =========================================================================
+
+def depth2(n, i):
+    s = 0
+    temp = i
+    for k in range(1, n - 3):
+        s += temp - 1
+        temp = temp % (g(n - k) + 1)
+    return s
+
+
+
 if __name__ == "__main__":
-    strings = [ "cats", "birds", "123456" ]
-    for string in strings:
-        print("=== %s | n: %d ===" % (string, len(string)))
-        for p in unique_paths(len(string)):
-            print(*apply_path(string, p))
+    for e in unique_paths(5):
+        print(*e)
+    for n in range(4, 11):
+        print(n, g(n))
