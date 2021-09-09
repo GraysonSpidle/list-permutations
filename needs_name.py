@@ -17,7 +17,9 @@ Author: Grayson Spidle
 '''
 
 from itertools import count
-from math import log2, factorial
+from math import log2
+from operator import mul
+from functools import reduce
 
 # Core Functions ===============================================================
 
@@ -40,10 +42,8 @@ def g(n):
         return (n - 1) * (g(n - 1) + 1)
     '''
     if 0 < n < 3:
-        return n  - 1
-    num = factorial(n - 1)
-    return sum(num // factorial(2 + i) for i in range(1, n - 2)) + 3 * (num // 2)
-    
+        return n - 1
+    return sum(reduce(mul, range(3 + i, n), 1) for i in range(1, n - 2)) + 3 * reduce(mul, range(3, n), 1)
 
 def G(n):
     ''' Number of unique paths for a string of n size. Includes the input. '''
@@ -59,11 +59,14 @@ def depth(n, i):
     return 0
 
 def normalize(n, i):
+    '''
     I = i % g(n - 1)
     if I:
         return I
     else:
         return g(n - 1)
+    '''
+    return i - ((i - 1) // g(n)) * g(n)
 
 def normalize_to(n, i, to):
     if n < to:
@@ -81,30 +84,13 @@ def combos(n, i):
     if n > 4:
         if d >= 1: # everything in between
             for k in range(1, min(d + 1, (n - 3))):
-                l = (normalize_to(n, i - (k - 1), n - (k - 1)) - 2)
+                l = (normalize_to(n, i - (k - 1), n - k) - 2)
                 yield l // g(n - (k + 1))
         if d == n - 3: # the last number	
             yield int(d == depth(n, i - 1))
     elif n == 4:
         if d == 1:
             yield int(d == depth(n, i - 1))
-
-def rcombos(n, i):
-    if i < 1:
-        return None
-    d = depth(n, i)
-    if n > 4:
-        if d == n - 3: # the last number	
-            yield int(d == depth(n, i - 1))
-        if d >= 1: # everything in between
-            for k in range(min(d + 1, (n - 3)) - 1, 0, -1) :
-                l = (normalize_to(n, i - (k - 1), n - (k - 1)) - 2)
-                yield l // g(n - (k + 1))
-    elif n == 4:
-        if d == 1:
-            yield int(d == depth(n, i - 1))
-    if d >= 0: # the first number
-        yield (i - 1) // g(n - 1)
 
 def get_path(n, i):
     ''' Returns the ith path in the series for a string of size n. '''
@@ -114,20 +100,11 @@ def get_path(n, i):
         del output[index + 1]
     return output
 
-def rget_path(n, i):
-    output = list((i, i + 1) for i in range(n))
-    for index in (-e for e in rcombos(n, i)):
-        if index == 0:
-            output[index] = (output[index][0], output[index + 1][1])
-            del output[index + 1]
-        else:
-            output[index] = (output[index - 1][0], output[index][1])
-
 # Unique Series Functions ======================================================
 
 def _func(i):
     for k in count(start=3):
-        if i < 2**k - (k + 2):
+        if (i - 1) < 2**k - (k + 2):
             return g(k)
 
 def _j(N, i): # starting element index of each line in the list diagram for uniques.
@@ -138,13 +115,13 @@ def _j(N, i): # starting element index of each line in the list diagram for uniq
         offset = 1
     else:
         offset = None # I know this will cause an error, but this equation isn't for N < 1
-    return sum(G(k + 2 + log2(N)) for k in range(i + offset)) - (2 + log2(N))
+    return (sum(G(k + 2 + log2(N)) for k in range(i + offset)) - (2 + log2(N))) + 1
 
 def _func2(i):
-    if i == 2:
-        return 1
-    elif 0 <= i < 2:
+    if 0 < i <= 2:
         return 2
+    elif i == 3:
+        return 1
     for p in count(3):
         if i < _j(2**p, 0):
             break
@@ -153,23 +130,23 @@ def _func2(i):
             return 2**k
 
 def get_unique_path_index(n, i):
-    ''' Returns an int that is the index param for get_path() for the ith element that is unique. Does not include input. '''
+    ''' Returns an int that is the index param for get_path() for the ith element that is unique. Does include input. '''
     if n < 5:
         if n == 4:
-            return (1,2,3,4,6,7)[i]
+            return (0,1,2,3,4,6,7)[i]
         return
-    if 0 <= i < n:
-        return i + 1
+    if 0 <= i <= n:
+        return i
     # past this point we need to offset i by n. So now the index will be i - n.
     num = 0
-    i = i - n
-    while i >= 0:
+    i -= n
+    while i > 0:
         num += _func(i)
         i -= _func2(i)
     
-    if i == -2:
+    if i == -1:
         return num + n - 1
-    elif i == -1:
+    elif i == 0:
         return num + n
 
 # Endpoint Functions ===========================================================
@@ -181,8 +158,7 @@ def paths(n):
 
 def unique_paths(n):
     ''' Returns a generator that yields every single path (with no duplicates) for a string of size n. '''
-    yield list((i, i+1) for i in range(n))
-    for i in range(1, G(n)):
+    for i in range(G(n)):
         yield get_path(n, get_unique_path_index(n, i))
 
 def apply_path(sliceable, path):
