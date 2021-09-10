@@ -24,78 +24,70 @@ from functools import reduce
 # Core Functions ===============================================================
 
 def f(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
-    ''' Total number of nodes for a string of n size across all paths. Includes nodes in input '''
+    ''' Number of nodes across all paths in the raw series. '''
     if n == 2:
         return 2
     return (n - 1) * f(n - 1) + n
 
 def F(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
-    ''' Total number of unique nodes for a string of n size across all paths. Includes nodes in input. '''
+    ''' Number of unique nodes across all paths in the raw series (Yes the raw series not the unique series). '''
     return ((n - 1) * n // 2) - 1 # it's a triangle number - 1
 
 def g(n):
-    ''' Number of paths for a string of n size. Does not include the input. '''
-    '''
-    if 0 < n <= 3:
-        return n - 1
-    elif n > 3:
-        return (n - 1) * (g(n - 1) + 1)
-    '''
+    ''' Number of paths in the raw series. '''
     if 0 < n < 3:
         return n - 1
     return sum(reduce(mul, range(3 + i, n), 1) for i in range(1, n - 2)) + 3 * reduce(mul, range(3, n), 1)
 
 def G(n):
-    ''' Number of unique paths for a string of n size. Includes the input. '''
-    return 2**(n-1) - 1 # it's a marsenne number
+    ''' Number of paths in the unique series. '''
+    return 2**(n-1) - 1 # it's a mersenne number
 
 # Raw Series Functions =========================================================
 
 def depth(n, i):
-    ''' i = 0 is assumed to be the input. '''
+    ''' Returns the depth of the path at index i. Do not put 0 for i, as it will always return an incorrect number. '''
     I = (i - 1) % g(n - 1)
     if I and n > 3:
         return 1 + depth(n - 1, I)
     return 0
 
 def normalize(n, i):
-    '''
-    I = i % g(n - 1)
-    if I:
-        return I
-    else:
-        return g(n - 1)
-    '''
+    ''' Transforms the i value to its equivalent i value under the first header in the list diagram. '''
     return i - ((i - 1) // g(n)) * g(n)
 
 def normalize_to(n, i, to):
+    ''' performs normalize(n, i) until n = to '''
     if n < to:
         return None
     elif n == to:
         return normalize(to, i)
     return normalize_to(n - 1, normalize(n, i), to)
 
-def combos(n, i):
-    if i < 1:
+def generate_transform_indices(n, i):
+    ''' Returns a generator that spits out transformation indices for us to use on the
+    initial path so we can make the path at index i.
+     '''
+    if i < 1: # 0 is the initial path and any negative number is undefined
         return None
     d = depth(n, i)
-    if d >= 0: # the first number
-        yield (i - 1) // g(n - 1)
+    yield (i - 1) // g(n - 1) # the first index
     if n > 4:
-        if d >= 1: # everything in between
+        if d >= 1: # all other indices
+            # k is the index of the generated output we are on
             for k in range(1, min(d + 1, (n - 3))):
                 l = (normalize_to(n, i - (k - 1), n - k) - 2)
                 yield l // g(n - (k + 1))
-        if d == n - 3: # the last number	
+        if d == n - 3: # the last index for the deepest paths
             yield int(d == depth(n, i - 1))
     elif n == 4:
         if d == 1:
             yield int(d == depth(n, i - 1))
 
 def get_path(n, i):
-    ''' Returns the ith path in the series for a string of size n. '''
+    ''' Returns the ith path in the series for a sliceable of size n. '''
     output = list((i, i+1) for i in range(n))
-    for index in combos(n, i):
+    for index in generate_transform_indices(n, i):
         output[index] = (output[index][0], output[index + 1][1])
         del output[index + 1]
     return output
@@ -103,6 +95,7 @@ def get_path(n, i):
 # Unique Series Functions ======================================================
 
 def _func(i):
+    '''  '''
     for k in count(start=3):
         if (i - 1) < 2**k - (k + 2):
             return g(k)
@@ -172,6 +165,19 @@ def iterate_paths(string):
 
 # Main =========================================================================
 
+def make_list_diagram_raw(n):
+    with open('%d.dat' % n, 'w') as file:
+        for i in range(g(n)):
+            if i:
+                file.write("    " * depth(n, i))
+            file.write(" ".join(str(e) for e in get_path(n, i)) + '\n')
+
+def make_list_diagram_unique(n):
+    with open('%d.dat' % n, 'w') as file:
+        for i in range(G(n)):
+            if i:
+                file.write("    " * depth(n, i))
+            file.write(" ".join(str(e) for e in get_path(n, i)) + '\n')
+
 if __name__ == "__main__":
-    for e in unique_paths(5):
-        print(*e)
+    print(depth(6, 26))
