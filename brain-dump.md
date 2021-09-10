@@ -40,4 +40,3 @@ This whole thing revolves around the size of your sliceable object. I will **alw
 - The **unique series** is a finite ordered series that contains *only* the unique paths from the raw series.
 - This uniqueness is preserved **regardless** of the value of `n`.
 - Indices in this series **do not** translate over to the raw series without conversion.
-	- Algorithm for this will be in the algorithm section. 
