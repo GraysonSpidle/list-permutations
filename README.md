@@ -1,7 +1,13 @@
-# sequential-permutations
+# list-permutations
 
-This repo should be treated as a pseudo-code documentation of a concept that I'm still in the process of figuring out the name for. I plan on making a video series that sheds light on this. I feel that a video is a far superior medium than text. Also I strongly dislike reading/writing papers.
+After some digging, what I made is basically this https://newbedev.com/find-all-list-permutations-of-splitting-a-string-in-python except mine is indexable, whereas his is reliant on the previous element.
+
+Adding the capability of indexing our elements is a huge pro because we can easily parallelize this operation *and* we can more easily translate this over to other (faster) languages like C.
+
+I plan on making a video series that sheds light on this. I feel that a video is a far superior medium than text. Also I strongly dislike reading/writing papers.
 
 I have a Python and C++ version of this.
 
 The Python version should be useful in understanding what's going on and the C++ version is far better performing *and* is written in such a way for you to convert it into CUDA code.
+
+Compiling `wotdthing.cpp` will give you an exe that you must use on the command line.
