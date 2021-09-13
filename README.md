@@ -8,6 +8,7 @@ I plan on making a video series that sheds light on this. I feel that a video is
 
 I have a Python and C++ version of this.
 
-The Python version should be useful in understanding what's going on and the C++ version is far better performing *and* is written in such a way for you to convert it into CUDA code.
+- The Python version should be useful in understanding what's going on. 
+- The C++ version is far better performing *and* is written in such a way for you to convert it into CUDA code.
 
-Compiling `wotdthing.cpp` will give you an exe that you must use on the command line.
+Compiling `list_permutations_exe.cpp` will give you an exe that you must use on the command line.

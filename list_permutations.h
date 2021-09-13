@@ -1,5 +1,5 @@
-#ifndef __FUNCTIONS2_H__
-#define __FUNCTIONS2_H__
+#ifndef __LIST_PERMUTATIONS_H__
+#define __LIST_PERMUTATIONS_H__
 
 #include <stdlib.h>
 #include <cstring>
@@ -39,7 +39,7 @@ constexpr ulargest_t better_fac(const uchar_t i, const uchar_t n) {
 	return output;
 }
 
-namespace Functions {
+namespace ListPermutations {
 
 	// Core Functions
 
@@ -271,4 +271,4 @@ namespace Functions {
 	}
 };
 
-#endif // ___FUNCTIONS2_H__
+#endif // __LIST_PERMUTATIONS_H__

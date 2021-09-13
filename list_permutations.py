@@ -95,12 +95,13 @@ def get_path(n, i):
 # Unique Series Functions ======================================================
 
 def _func(i):
-    '''  '''
+    ''' Returns the number to add to the total to convert a unique series index to a raw series index. '''
     for k in count(start=3):
         if (i - 1) < 2**k - (k + 2):
             return g(k)
 
-def _j(N, i): # starting element index of each line in the list diagram for uniques.
+def _j(N, i):
+    ''' Returns the starting element index of each line in the list diagram for uniques. '''
     # N is a log of 2
     if N == 1:
         offset = 2
@@ -111,6 +112,7 @@ def _j(N, i): # starting element index of each line in the list diagram for uniq
     return (sum(G(k + 2 + log2(N)) for k in range(i + offset)) - (2 + log2(N))) + 1
 
 def _func2(i):
+    '''  '''
     if 0 < i <= 2:
         return 2
     elif i == 3:
@@ -159,9 +161,9 @@ def apply_path(sliceable, path):
     for node in path:
         yield sliceable[slice(*node)]
 
-def iterate_paths(string):
-    for upath in unique_paths(len(string)):
-        yield apply_path(string, upath)
+def iterate_paths(sliceable):
+    for upath in unique_paths(len(sliceable)):
+        yield apply_path(sliceable, upath)
 
 # Main =========================================================================
 
@@ -180,4 +182,11 @@ def make_list_diagram_unique(n):
             file.write(" ".join(str(e) for e in get_path(n, i)) + '\n')
 
 if __name__ == "__main__":
-    print(depth(6, 26))
+    z = 3
+    n = 4
+    print("n = %d" % n)
+    for i in range(1, G(n)):
+        I = get_unique_path_index(n, i)
+        if n - (1 + depth(n, I)) == z:
+            print(i, end=' ')
+    print()

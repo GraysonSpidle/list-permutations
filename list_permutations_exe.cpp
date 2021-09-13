@@ -4,8 +4,8 @@
 #include <fstream>
 #include <map>
 
-#include "Functions2.h"
-using namespace Functions;
+#include "list_permutations.h"
+using namespace ListPermutations;
 
 std::vector<std::string> read_string_list(const char* path) {
 	std::vector<std::string> vec;
