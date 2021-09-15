@@ -7,7 +7,7 @@ This whole thing revolves around the size of your sliceable object. I will **alw
 - A list diagram's structure can be described as such:
 	- Every path in the list diagram gets its own line.
 		- This means that line 0 is the 0th element in the series and line 1 is the 1st element and so on.
-	- The 0th line is the **progenitor path** which is the path that makes is the start of every element in the sliceable object. 
+	- The 0th line is the **progenitor path** which is the path that makes every subsequent element in the sliceable object. 
 		- This always has `n` nodes inside it.
 	- Every list diagram has `n - 1` header paths which always have `n - 1` nodes inside them
 	- After each header path is a copy of the `n - 1` list diagram structure (with values based on its header which acts like its progenitor path). This recursive behavior ends at `n = 3` where there are *only* header paths.
