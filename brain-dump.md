@@ -7,11 +7,12 @@ This whole thing revolves around the size of your sliceable object. I will **alw
 - A list diagram's structure can be described as such:
 	- Every path in the list diagram gets its own line.
 		- This means that line 0 is the 0th element in the series and line 1 is the 1st element and so on.
-	- The first line is the **initial path** which is the path that makes every element, in the sliceable object, its own node. This always has `n` nodes inside it.
+	- The 0th line is the **progenitor path** which is the path that makes is the start of every element in the sliceable object. 
+		- This always has `n` nodes inside it.
 	- Every list diagram has `n - 1` header paths which always have `n - 1` nodes inside them
-	- After each header path is a copy of the `n - 1` list diagram structure (with values based on its header which acts like its initial path). This recursive behavior ends at `n = 3` where there are *only* header paths.
+	- After each header path is a copy of the `n - 1` list diagram structure (with values based on its header which acts like its progenitor path). This recursive behavior ends at `n = 3` where there are *only* header paths.
 	- This recursive behavior also introduces a concept of **depth** for each path.
-		- Except for the initial path, every path has a depth which represents how deep in the recursion that path is.
+		- Except for the progenitor path, every path has a depth which represents how deep in the recursion that path is.
 	- Every path is indented by its depth. 
 		- I use 4 spaces per depth, but that isn't super important.
 		- This is more or less optional, but I like to do this for the clarity it brings.
