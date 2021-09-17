@@ -29,9 +29,17 @@ def f(n): # This isn't ever used in this file, but I'll leave it here in case it
         return 2
     return (n - 1) * f(n - 1) + n
 
+def fu(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
+    ''' Number of nodes across all paths in the unique series. '''
+    return sum(path_size(n, get_unique_path_index(n, i)) for i in range(G(n))) # I don't have an equation for this one
+
 def F(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
     ''' Number of unique nodes across all paths in the raw series (Yes the raw series not the unique series). '''
     return ((n - 1) * n // 2) - 1 # it's a triangle number - 1
+
+def Fu(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
+    ''' Number of unique nodes across all paths in the unique series. '''
+    return (n**2 + n - 2) // 2
 
 def g(n):
     ''' Number of paths in the raw series. '''
@@ -52,6 +60,9 @@ def depth(n, i):
         return 1 + depth(n - 1, I)
     return 0
 
+def path_size(n, i):
+    return n - (1 + depth(n, i)) * bool(i) # i = 0 is n
+
 def normalize(n, i):
     ''' Transforms the i value to its equivalent i value under the first header in the list diagram. '''
     return i - ((i - 1) // g(n)) * g(n)
@@ -66,9 +77,9 @@ def normalize_to(n, i, to):
 
 def generate_transform_indices(n, i):
     ''' Returns a generator that spits out transformation indices for us to use on the
-    initial path so we can make the path at index i.
-     '''
-    if i < 1: # 0 is the initial path and any negative number is undefined
+    progenitor path so we can make the path at index i.
+    '''
+    if i < 1: # 0 is the progenitor path and any negative number is undefined
         return None
     d = depth(n, i)
     yield (i - 1) // g(n - 1) # the first index
@@ -86,7 +97,7 @@ def generate_transform_indices(n, i):
 
 def get_path(n, i):
     ''' Returns the ith path in the series for a sliceable of size n. '''
-    output = list((i, i+1) for i in range(n))
+    output = list((i, i+1) for i in range(n)) # progenitor path
     for index in generate_transform_indices(n, i):
         output[index] = (output[index][0], output[index + 1][1])
         del output[index + 1]
@@ -132,7 +143,7 @@ def get_unique_path_index(n, i):
         return
     if 0 <= i <= n:
         return i
-    # past this point we need to offset i by n. So now the index will be i - n.
+    # past this point we need to offset i by n.
     num = 0
     i -= n
     while i > 0:
@@ -181,12 +192,15 @@ def make_list_diagram_unique(n):
                 file.write("    " * depth(n, i))
             file.write(" ".join(str(e) for e in get_path(n, i)) + '\n')
 
-if __name__ == "__main__":
-    z = 3
-    n = 4
-    print("n = %d" % n)
+def indices(n, z):
+    if z == n:
+        yield 0
+        return
     for i in range(1, G(n)):
         I = get_unique_path_index(n, i)
-        if n - (1 + depth(n, I)) == z:
-            print(i, end=' ')
-    print()
+        if path_size(n, I) == z:
+            yield i
+
+if __name__ == "__main__":
+    for path in unique_paths(5):
+        print(*path)
