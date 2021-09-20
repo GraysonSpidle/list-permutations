@@ -143,6 +143,7 @@ This animal will be referred to as the **raw series**, as it is a series of path
 
 #### g(n)
 First off, we need to know how many paths are in each raw series (dependent on `n`). That equation will be referred to as `g(n)` and the mathematical formula is this:
+
 ![formula](https://raw.githubusercontent.com/GraysonSpidle/list-permutations/main/concepts-images/gn.png)
 
 *A proof would be provided here if I (the author) understood how to write them. Perhaps a smarter individual will write a proof or find a better formula, who knows.*
@@ -213,6 +214,7 @@ First we will explore the iterative way *then* we will explore the indexable way
 
 #### G(n)
 However, before we do any of that, we must make another equation that tells us how many paths are in the unique series. This equation will be referred to as `G(n)` and the mathematical formula for that is:
+
 ![formula](https://raw.githubusercontent.com/GraysonSpidle/list-permutations/main/concepts-images/_Gn.png)
 
 Turns out, it's a Mersenne number, which is very nice for computers.
@@ -224,5 +226,6 @@ Onto the iterative way of generating indices for the unique elements in the raw 
 
 If we went through every path in an `n = 5` raw series and found the index of all the uniques, we would come up with a collection of indices as such:
 `0, 1, 2, 3, 4, 5, 7, 8, 11, 15, 17, 18, 21, 28, 31`
+
 
 **TO BE CONTINUED**
