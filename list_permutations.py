@@ -45,7 +45,15 @@ def g(n):
     ''' Number of paths in the raw series. '''
     if 0 < n < 3:
         return n - 1
-    return sum(reduce(mul, range(3 + i, n), 1) for i in range(1, n - 2)) + 3 * reduce(mul, range(3, n), 1)
+    _capital_pi = lambda i, n: reduce(mul, range(i, n), 1)
+
+    output = 0
+    for i in range(1, n - 2):
+        output += _capital_pi(3 + i, n)
+    output += 3 * _capital_pi(3, n)
+
+    return output
+    #return sum(reduce(mul, range(3 + i, n), 1) for i in range(1, n - 2)) + 3 * reduce(mul, range(3, n), 1)
 
 def G(n):
     ''' Number of paths in the unique series. '''
