@@ -41,11 +41,18 @@ def Fu(n): # This isn't ever used in this file, but I'll leave it here in case i
     ''' Number of unique nodes across all paths in the unique series. '''
     return (n**2 + n - 2) // 2
 
+def _first_term_in_g(n):
+    if n < 5:
+        return 0
+    if n == 5:
+        return 5
+    return (n - 1) * _first_term_in_g(n - 1) + 1
+
 def g(n):
     ''' Number of paths in the raw series. '''
     if 0 < n < 3:
         return n - 1
-    _capital_pi = lambda i, n: reduce(mul, range(i, n), 1)
+    return _first_term_in_g(n) + 3 * reduce(mul, range(3, n), 1)
 
     output = 0
     for i in range(1, n - 2):
