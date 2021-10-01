@@ -43,7 +43,7 @@ def Fu(n): # This isn't ever used in this file, but I'll leave it here in case i
 
 def _first_term_in_g(n):
     if n < 5:
-        return 0
+        return max(n - 3, 0)
     if n == 5:
         return 5
     return (n - 1) * _first_term_in_g(n - 1) + 1
