@@ -12,6 +12,7 @@ c a ts
 It does this for ANY string size greater than 3. 
 
 It is worth noting that EVERY time a variable/parameter is named "n", that represents how long the given string is.
+The ONLY exception to this is when I'm expressing big O notation.
 
 Author: Grayson Spidle
 '''
@@ -24,7 +25,7 @@ from functools import reduce
 # Core Functions ===============================================================
 
 def f(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
-    ''' Number of nodes across all paths in the raw series. '''
+    ''' Number of nodes across all paths in the raw series. O(n). '''
     if n == 2:
         return 2
     return (n - 1) * f(n - 1) + n
@@ -34,14 +35,15 @@ def fu(n): # This isn't ever used in this file, but I'll leave it here in case i
     return sum(path_size(n, get_unique_path_index(n, i)) for i in range(G(n))) # I don't have an equation for this one
 
 def F(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
-    ''' Number of unique nodes across all paths in the raw series (Yes the raw series not the unique series). '''
+    ''' Number of unique nodes across all paths in the raw series (Yes the raw series not the unique series). O(1). '''
     return ((n - 1) * n // 2) - 1 # it's a triangle number - 1
 
 def Fu(n): # This isn't ever used in this file, but I'll leave it here in case it becomes useful later.
-    ''' Number of unique nodes across all paths in the unique series. '''
+    ''' Number of unique nodes across all paths in the unique series. O(n^2). '''
     return (n**2 + n - 2) // 2
 
 def _first_term_in_g(n):
+    ''' Calculates the first term in the equation for g(n). O(n). '''
     if n < 5:
         return max(n - 3, 0)
     if n == 5:
@@ -49,18 +51,10 @@ def _first_term_in_g(n):
     return (n - 1) * _first_term_in_g(n - 1) + 1
 
 def g(n):
-    ''' Number of paths in the raw series. '''
+    ''' Number of paths in the raw series. O(n). '''
     if 0 < n < 3:
         return n - 1
-    return _first_term_in_g(n) + 3 * reduce(mul, range(3, n), 1)
-
-    output = 0
-    for i in range(1, n - 2):
-        output += _capital_pi(3 + i, n)
-    output += 3 * _capital_pi(3, n)
-
-    return output
-    #return sum(reduce(mul, range(3 + i, n), 1) for i in range(1, n - 2)) + 3 * reduce(mul, range(3, n), 1)
+    return _first_term_in_g(n) + 3 * reduce(mul, range(3, n), 1) # the reduce operation is just a capital pi operation
 
 def G(n):
     ''' Number of paths in the unique series. '''
@@ -69,18 +63,19 @@ def G(n):
 # Raw Series Functions =========================================================
 
 def depth(n, i):
-    ''' Returns the depth of the path at index i. Do not put 0 for i, as it will always return an incorrect number. '''
+    ''' Returns the depth of the path at index i. Do not put 0 for i, as it will always return an incorrect number. O(n^2). '''
     I = (i - 1) % g(n - 1)
     if I and n > 3:
         return 1 + depth(n - 1, I)
     return 0
 
-def path_size(n, i):
-    return n - (1 + depth(n, i)) * bool(i) # i = 0 is n
+def path_size(n, i): # O(n^2)
+    return n - (1 + depth(n, i)) * bool(i) # i = 0 returns n
 
 def normalize(n, i):
     ''' Transforms the i value to its equivalent i value under the first header in the list diagram. '''
-    return i - ((i - 1) // g(n)) * g(n)
+    gn = g(n)
+    return i - ((i - 1) // gn) * gn
 
 def normalize_to(n, i, to):
     ''' performs normalize(n, i) until n = to '''
@@ -128,17 +123,6 @@ def _func(i):
     for k in count(start=3):
         if (i - 1) < 2**k - (k + 2):
             return g(k)
-
-def _j(N, i):
-    ''' Returns the starting element index of each line in the list diagram for uniques. '''
-    # N is a log of 2
-    if N == 1:
-        offset = 2
-    elif N > 1:
-        offset = 1
-    else:
-        offset = None # I know this will cause an error, but this equation isn't for N < 1
-    return (sum(G(k + 2 + log2(N)) for k in range(i + offset)) - (2 + log2(N))) + 1
 
 def _func2(i):
     '''  How much to subtract the i value by. '''
@@ -220,5 +204,5 @@ def indices(n, z):
             yield i
 
 if __name__ == "__main__":
-    for path in unique_paths(5):
-        print(*path)
+    for e in iterate_paths("birds"):
+        print(*e)
