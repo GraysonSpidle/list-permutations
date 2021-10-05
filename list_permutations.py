@@ -120,6 +120,9 @@ def get_path(n, i):
 
 # Unique Series Functions ======================================================
 
+def _j(N, i):
+    return 2**(i + 2 + N) - i - 2**(N + 1) - (2 + N)
+
 def _func(i):
     ''' Returns the number to add to the total to convert a unique series index to a raw series index. '''
     for k in count(start=3):
@@ -138,16 +141,16 @@ def _j(N, i):
     return (sum(G(k + 2 + log2(N)) for k in range(i + offset)) - (2 + log2(N))) + 1
 
 def _func2(i):
-    '''  '''
+    '''  How much to subtract the i value by. '''
     if 0 < i <= 2:
         return 2
     elif i == 3:
         return 1
     for p in count(3):
-        if i < _j(2**p, 0):
+        if i < _j(p, 0):
             break
     for k in range(p):
-        if i >= _j(2**k, p - k - (1 if k else 2)):
+        if i >= _j(k, p - k - 1):
             return 2**k
 
 def get_unique_path_index(n, i):
