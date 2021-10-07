@@ -61,17 +61,13 @@ void print_unique_paths(const uchar_t n) {
 	delete[] output;
 }
 
-void print_combos(const uchar_t n) {
-	uchar_t* stuff;
-	for (ulargest_t i = 1; i < g(n); i++) {
-		stuff = combos(n, i);
-		std::cout << i << ":";
-		for (uchar_t k = 0; k < 1 + depth(n, i); k++) {
-			std::cout << " " << std::to_string(stuff[k]);
-		}
-		std::cout << std::endl;
-		delete[] stuff;
+// This would generate the "templates"
+ulargest_t* generate_unique_path_indices(uchar_t n) {
+	ulargest_t* output = new ulargest_t[G(n)];
+	for (ulargest_t i = 0; i < G(n); i += 1) {
+		output[i] = get_unique_path_index(n, i);
 	}
+	return output;
 }
 
 int main(int argc, char** argv) {
@@ -83,23 +79,18 @@ int main(int argc, char** argv) {
 		std::cerr << "Only supply strings bigger than 3 characters." << std::endl;
 		return 2;
 	}
-	else if (strlen(argv[1]) > 21) {
-		std::cerr << "Don't put strings larger than 21 characters. 64-bit limitations prevent us from going past 21 characters." << std::endl;
-		return 2;
-	}
 	auto n = strlen(argv[1]);
 	std::cout << "going through " << G(n) << " possible paths..." << std::endl;
 	char** stuff = apply_paths(argv[1]);
 
-	for (ulargest_t i = 0; i < G(n); i++) {
+	for (ulargest_t i = 0; i < G(n); i += 1) {
 		std::cout << stuff[i] << std::endl;
 	}
 
-	for (ulargest_t i = 0; i < G(n); i++) {
+	for (ulargest_t i = 0; i < G(n); i += 1) {
 		delete[] stuff[i];
 	}
 	delete[] stuff;
-
 
 	return 0;
 }
