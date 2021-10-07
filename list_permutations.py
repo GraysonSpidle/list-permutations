@@ -57,8 +57,8 @@ def g(n):
     return _first_term_in_g(n) + 3 * reduce(mul, range(3, n), 1) # the reduce operation is just a capital pi operation
 
 def G(n):
-    ''' Number of paths in the unique series. '''
-    return 2**(n-1) - 1 # it's a mersenne number
+    ''' Number of paths in the unique series. O(1) '''
+    return (1 << (n-1)) - 1 # it's a mersenne number
 
 # Raw Series Functions =========================================================
 
@@ -116,12 +116,13 @@ def get_path(n, i):
 # Unique Series Functions ======================================================
 
 def _j(N, i):
-    return 2**(i + 2 + N) - i - 2**(N + 1) - (2 + N)
+    return (1 << (i + 2 + N)) - i  - (1 << (N + 1)) - (2 + N)
+    #return 2**(i + 2 + N) - i - 2**(N + 1) - (2 + N)
 
 def _func(i):
     ''' Returns the number to add to the total to convert a unique series index to a raw series index. '''
     for k in count(start=3):
-        if (i - 1) < 2**k - (k + 2):
+        if i < (1 << k) - k - 1:
             return g(k)
 
 def _func2(i):
@@ -135,7 +136,7 @@ def _func2(i):
             break
     for k in range(p):
         if i >= _j(k, p - k - 1):
-            return 2**k
+            return 1 << k #2**k
 
 def get_unique_path_index(n, i):
     ''' Returns an int that is the index param for get_path() for the ith element that is unique. Does include input. '''
