@@ -38,3 +38,4 @@ For the C++ version:
 - I plan on making a video series that sheds light on this. I feel that a video is a far superior medium than text. Also I strongly dislike reading/writing papers.
 - I might make my own rudimentary large numbers implementation. If I do, I'll make it so that you can substitute it for something that's likely better.
 - Make an example of a CUDA program with this.
+- Optimizations for speed wherever possible. 
