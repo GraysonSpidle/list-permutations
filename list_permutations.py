@@ -62,6 +62,7 @@ def depth(n, i):
     return 0
 
 def path_size(n, i):
+    ''' Returns the size of the ith path for a sliceable of size n. '''
     return n - (1 + depth(n, i)) * bool(i) # i = 0 returns n
 
 def normalize(n, i):
@@ -70,7 +71,7 @@ def normalize(n, i):
     return i - ((i - 1) // gn) * gn
 
 def normalize_to(n, i, to):
-    ''' performs normalize(n, i) until n = to '''
+    ''' performs normalize(n - 1, i) until n = to, n >= to.'''
     if n < to:
         return None
     elif n == to:
@@ -80,6 +81,8 @@ def normalize_to(n, i, to):
 def generate_transform_indices(n, i):
     ''' Returns a generator that spits out transformation indices for us to use on the
     progenitor path so we can make the path at index i.
+
+    O(n)?
     '''
     if i < 1: # 0 is the progenitor path and any negative number is undefined
         return None
@@ -108,12 +111,15 @@ def get_path(n, i):
 # Unique Series Functions ======================================================
 
 def _j(N, i):
-    return (1 << (i + 2 + N)) - i  - (1 << (N + 1)) - (2 + N)
+    ''' Returns the ith index which has 2^N elements in its row in thing.dat 
+    It also is the first in its row.
+    '''
+    return (1 << (i + 2 + N)) - i - (1 << (N + 1)) - (2 + N)
     #return 2**(i + 2 + N) - i - 2**(N + 1) - (2 + N)
 
 def _func(i):
     ''' Returns the number to add to the total to convert a unique series index to a raw series index. '''
-    for k in count(start=3):
+    for k in count(start=3): # optimize this!
         if i < (1 << k) - k - 1:
             return g(k)
 
@@ -123,6 +129,7 @@ def _func2(i):
         return 2
     elif i == 3:
         return 1
+    # optimize this!
     for p in count(3):
         if i < _j(p, 0):
             break
@@ -161,11 +168,17 @@ def end_indices():
     If someone were to find the inverse of this, it would save sooooo
     much time during computations because the end indices are the slowest
     ones to calculate which would bring the big O down to linear scaling.
+
+    Then you can use a special formula to go right to the answer.
+
+    It appears that you must use something called a "lambert w function"
+    and I'm not clear on what that is or, more importantly, can it be
+    implemented using just integers.
     '''
 
     for i in count(0):
-        y = int( ((8*i + 17)**0.5 -5) // 2 + 1 )
-        yield (1 << (y + 3)) - y - 4 - (1 << ( (y*(y+5)) // 2 + 1 - i ) )
+        y = int( ((8*i + 17)**0.5 - 5) // 2 + 1 )
+        yield (1 << (y + 3)) - y - 4 - ( 1 << ( (y*(y+5)) // 2 + 1 - i ) )
 
 # Endpoint Functions ===========================================================
 
